@@ -1,0 +1,19 @@
+{
+  "stateId": "008-pricing-awareness-market-data",
+  "stateTitle": "Pricing Awareness and Market Data Streaming",
+  "stateStatus": "implemented",
+  "featurePack": "specs/008-pricing-awareness-market-data",
+  "previousStates": ["007-observability-lgtm-compose"],
+  "nextStates": ["009-order-management-matcher"],
+  "isConvergenceState": false,
+  "convergenceLevel": "none",
+  "lineageRole": "canonical",
+  "dottedParents": [],
+  "previousConvergenceState": "007-observability-lgtm-compose",
+  "nextConvergenceState": "009-order-management-matcher",
+  "sourceBranch": "",
+  "sourceCommit": "ca0f66429bdf95552da0655eed56e34c4af67185",
+  "generatedAtUtc": "2026-11-13T10:41:38Z",
+  "generationEntryPoint": "bash pipeline/generate-state.sh 008-pricing-awareness-market-data",
+  "publishTagHint": "generated/008-pricing-awareness-market-data/v1"
+}

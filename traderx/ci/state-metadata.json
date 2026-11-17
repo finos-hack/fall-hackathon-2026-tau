@@ -1,0 +1,105 @@
+{
+  "stateId": "008-pricing-awareness-market-data",
+  "isConvergence": false,
+  "convergenceLevel": "none",
+  "convergenceNamespace": "",
+  "modules": {
+    "node": [
+      "price-publisher",
+      "reference-data",
+      "web-front-end/angular"
+    ],
+    "gradle": [
+      "account-service",
+      "database",
+      "position-service",
+      "trade-processor",
+      "trade-service"
+    ],
+    "dotnet": [
+      "people-service/PeopleService.WebApi"
+    ],
+    "docker": [
+      {
+        "directory": "account-service",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "account-service"
+      },
+      {
+        "directory": "database",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "database"
+      },
+      {
+        "directory": "ingress",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "ingress"
+      },
+      {
+        "directory": "people-service",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "people-service"
+      },
+      {
+        "directory": "position-service",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "position-service"
+      },
+      {
+        "directory": "price-publisher",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "price-publisher"
+      },
+      {
+        "directory": "pricing-awareness-market-data/runtime-images/blackbox-exporter",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "blackbox-exporter"
+      },
+      {
+        "directory": "pricing-awareness-market-data/runtime-images/loki",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "loki"
+      },
+      {
+        "directory": "pricing-awareness-market-data/runtime-images/prometheus",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "prometheus"
+      },
+      {
+        "directory": "pricing-awareness-market-data/runtime-images/tempo",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "tempo"
+      },
+      {
+        "directory": "reference-data",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "reference-data"
+      },
+      {
+        "directory": "trade-processor",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "trade-processor"
+      },
+      {
+        "directory": "trade-service",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "trade-service"
+      },
+      {
+        "directory": "web-front-end/angular",
+        "dockerfile": "Dockerfile.compose",
+        "imageName": "web-front-end-angular"
+      }
+    ]
+  },
+  "deploy": {
+    "enabled": false,
+    "profile": "",
+    "environment": "",
+    "domainHint": ""
+  },
+  "runtime": {
+    "kind": "compose",
+    "path": "pricing-awareness-market-data/docker-compose.yml"
+  }
+}
