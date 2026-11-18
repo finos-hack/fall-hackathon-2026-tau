@@ -1,0 +1,77 @@
+# Feature 001 deployment override (new file; no baseline file is edited).
+# 1) Publishes every baseline TraderX port on 127.0.0.1 only. Bindings copied entry for entry from
+#    /home/research/work/traderx-local-only.override.yml, the override the local stack uses.
+# 2) Adds risk-service (SYNTHETIC price history, seed 20261117).
+# Relative paths resolve against the first compose file's folder: traderx/pricing-awareness-market-data/.
+services:
+  account-service:
+    ports: !override
+      - "127.0.0.1:18088:18088"
+  blackbox-exporter:
+    ports: !override
+      - "127.0.0.1:9115:9115"
+  database:
+    ports: !override
+      - "127.0.0.1:18083:5432"
+  grafana:
+    ports: !override
+      - "127.0.0.1:13001:3000"
+  ingress:
+    ports: !override
+      - "127.0.0.1:8080:8080"
+  loki:
+    ports: !override
+      - "127.0.0.1:3100:3100"
+  nats-broker:
+    ports: !override
+      - "127.0.0.1:4222:4222"
+      - "127.0.0.1:8222:8222"
+      - "127.0.0.1:8081:8081"
+  otel-collector:
+    ports: !override
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+      - "127.0.0.1:8888:8888"
+      - "127.0.0.1:8889:8889"
+      - "127.0.0.1:13133:13133"
+  people-service:
+    ports: !override
+      - "127.0.0.1:18089:18089"
+  position-service:
+    ports: !override
+      - "127.0.0.1:18090:18090"
+  price-publisher:
+    ports: !override
+      - "127.0.0.1:18100:18100"
+  prometheus:
+    ports: !override
+      - "127.0.0.1:9090:9090"
+  reference-data:
+    ports: !override
+      - "127.0.0.1:18085:18085"
+  tempo:
+    ports: !override
+      - "127.0.0.1:3200:3200"
+  trade-processor:
+    ports: !override
+      - "127.0.0.1:18091:18091"
+  trade-service:
+    ports: !override
+      - "127.0.0.1:18092:18092"
+  web-front-end-angular:
+    ports: !override
+      - "127.0.0.1:18093:18093"
+  risk-service:
+    build:
+      context: ../../risk-service
+    environment:
+      RISK_DATA_DIR: /data
+      TRADERX_ACCOUNT_URL: http://account-service:18088
+      TRADERX_POSITION_URL: http://position-service:18090
+    volumes:
+      - ../../specs/001-portfolio-var-backtest/data:/data:ro
+    ports:
+      - "127.0.0.1:18110:18110"
+    depends_on:
+      - account-service
+      - position-service

@@ -1,0 +1,281 @@
+{
+  "captured_at": "2026-11-18T17:26:18Z",
+  "source": {
+    "stack": "traderx-state-008",
+    "note": "separate checkout (/home/research/work/traderX-state-008) of finos/traderX@d6e7fe4. seed check PASSED: 22214 = C -2000, IBM -100, MS +1000; 52355 = BAC -2400 (traderx/database/initialSchema.sql L90); 44044 positions = [] (extra GET, not stored in responses)",
+    "base_url": "http://127.0.0.1:8080"
+  },
+  "responses": [
+    {
+      "path": "/account-service/account/",
+      "status": 200,
+      "body": [
+        {
+          "displayName": "Internal Trading Book",
+          "id": 10031
+        },
+        {
+          "displayName": "Private Clients Fund TTXX",
+          "id": 11413
+        },
+        {
+          "displayName": "Test Account 20",
+          "id": 22214
+        },
+        {
+          "displayName": "Algo Execution Partners",
+          "id": 42422
+        },
+        {
+          "displayName": "Trading Account 1",
+          "id": 44044
+        },
+        {
+          "displayName": "Big Corporate Fund",
+          "id": 52355
+        },
+        {
+          "displayName": "Hedge Fund TXY1",
+          "id": 62654
+        }
+      ]
+    },
+    {
+      "path": "/account-service/account/22214",
+      "status": 200,
+      "body": {
+        "displayName": "Test Account 20",
+        "id": 22214
+      }
+    },
+    {
+      "path": "/account-service/account/52355",
+      "status": 200,
+      "body": {
+        "displayName": "Big Corporate Fund",
+        "id": 52355
+      }
+    },
+    {
+      "path": "/account-service/account/44044",
+      "status": 200,
+      "body": {
+        "displayName": "Trading Account 1",
+        "id": 44044
+      }
+    },
+    {
+      "path": "/account-service/account/99999",
+      "status": 404,
+      "body": "Account with id 99999 not found"
+    },
+    {
+      "path": "/position-service/positions/22214",
+      "status": 200,
+      "body": [
+        {
+          "accountId": 22214,
+          "averageCostBasis": 57.5,
+          "quantity": -2000,
+          "security": "C",
+          "updated": "2026-11-16T22:37:08.664Z"
+        },
+        {
+          "accountId": 22214,
+          "averageCostBasis": 136.25,
+          "quantity": -100,
+          "security": "IBM",
+          "updated": "2026-11-16T22:37:08.663Z"
+        },
+        {
+          "accountId": 22214,
+          "averageCostBasis": 95.125,
+          "quantity": 1000,
+          "security": "MS",
+          "updated": "2026-11-16T22:37:08.663Z"
+        }
+      ]
+    },
+    {
+      "path": "/position-service/positions/52355",
+      "status": 200,
+      "body": [
+        {
+          "accountId": 52355,
+          "averageCostBasis": 41.125,
+          "quantity": -2400,
+          "security": "BAC",
+          "updated": "2026-11-16T22:37:08.666Z"
+        }
+      ]
+    },
+    {
+      "path": "/price-publisher/prices",
+      "status": 200,
+      "body": {
+        "prices": [
+          {
+            "ticker": "AAPL",
+            "price": 187.376,
+            "openPrice": 191.2,
+            "closePrice": 192.8,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "MSFT",
+            "price": 433.408,
+            "openPrice": 429.1,
+            "closePrice": 431.6,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "AMZN",
+            "price": 184.1,
+            "openPrice": 184.1,
+            "closePrice": 185.5,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "GOOGL",
+            "price": 172.86,
+            "openPrice": 165.9,
+            "closePrice": 167.1,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "META",
+            "price": 496.511,
+            "openPrice": 499.7,
+            "closePrice": 503.2,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "NVDA",
+            "price": 871.869,
+            "openPrice": 901.4,
+            "closePrice": 910.8,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "TSLA",
+            "price": 170.369,
+            "openPrice": 169.2,
+            "closePrice": 172,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "IBM",
+            "price": 185.962,
+            "openPrice": 186,
+            "closePrice": 187.4,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "BAC",
+            "price": 41.614,
+            "openPrice": 41.1,
+            "closePrice": 41.7,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "C",
+            "price": 58.827,
+            "openPrice": 59.2,
+            "closePrice": 58.6,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "JPM",
+            "price": 194.78,
+            "openPrice": 194.1,
+            "closePrice": 195.8,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "GS",
+            "price": 406.006,
+            "openPrice": 401.7,
+            "closePrice": 404.2,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "MS",
+            "price": 92.922,
+            "openPrice": 90.5,
+            "closePrice": 91.1,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "UBS",
+            "price": 29.487,
+            "openPrice": 29.4,
+            "closePrice": 29.9,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "DB",
+            "price": 17.267,
+            "openPrice": 16.8,
+            "closePrice": 17.05,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "COF",
+            "price": 147.261,
+            "openPrice": 149.2,
+            "closePrice": 150.3,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "DFS",
+            "price": 121.661,
+            "openPrice": 126.4,
+            "closePrice": 127.65,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "FNMA",
+            "price": 1.125,
+            "openPrice": 1.12,
+            "closePrice": 1.145,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "FIS",
+            "price": 76.122,
+            "openPrice": 74.7,
+            "closePrice": 75.2,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          },
+          {
+            "ticker": "FNF",
+            "price": 49.645,
+            "openPrice": 49.5,
+            "closePrice": 49.95,
+            "asOf": "2026-11-18T17:26:18.036Z",
+            "source": "snapshot"
+          }
+        ]
+      }
+    }
+  ]
+}
