@@ -1,0 +1,966 @@
+# T012 red run, 2026-11-18T23:02:08Z, HEAD 58abb74
+# 18110: nothing listening
+
+$ PYTHONPATH=risk-service python3 -m pytest tests/unit tests/oracle -q
+/usr/local/anaconda3/lib/python3.9/site-packages/pytest_asyncio/plugin.py:208: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+==================================== ERRORS ====================================
+________ ERROR collecting tests/unit/test_unit_calculation_contract.py _________
+ImportError while importing test module '/home/research/work/fall-hackathon-2026-tau/tests/unit/test_unit_calculation_contract.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/local/anaconda3/lib/python3.9/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/unit/test_unit_calculation_contract.py:7: in <module>
+    from risk_service.core import (
+E   ModuleNotFoundError: No module named 'risk_service.core'
+_____ ERROR collecting tests/oracle/test_oracle_independent_comparison.py ______
+ImportError while importing test module '/home/research/work/fall-hackathon-2026-tau/tests/oracle/test_oracle_independent_comparison.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/local/anaconda3/lib/python3.9/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/oracle/test_oracle_independent_comparison.py:7: in <module>
+    from risk_service import core as service
+E   ImportError: cannot import name 'core' from 'risk_service' (/home/research/work/fall-hackathon-2026-tau/risk-service/risk_service/__init__.py)
+=========================== short test summary info ============================
+ERROR tests/unit/test_unit_calculation_contract.py
+ERROR tests/oracle/test_oracle_independent_comparison.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+2 errors in 0.13s
+exit 2
+
+$ RISK_BASE_URL=http://127.0.0.1:18110 PYTHONPATH=risk-service python3 -m pytest tests/integration -q
+/usr/local/anaconda3/lib/python3.9/site-packages/pytest_asyncio/plugin.py:208: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+FFFFF.                                                                   [100%]
+=================================== FAILURES ===================================
+___________________ test_outcomes_precedence_and_provenance ____________________
+
+self = <urllib.request.HTTPHandler object at 0x7fcb2dc84fa0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x7fcb2dc4c3a0>, http_conn_args = {}
+host = '127.0.0.1:18110'
+h = <http.client.HTTPConnection object at 0x7fcb2dc84b80>
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+>               h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1346: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/anaconda3/lib/python3.9/http/client.py:1279: in request
+    self._send_request(method, url, body, headers, encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1325: in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1274: in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1034: in _send_output
+    self.send(msg)
+/usr/local/anaconda3/lib/python3.9/http/client.py:974: in send
+    self.connect()
+/usr/local/anaconda3/lib/python3.9/http/client.py:945: in connect
+    self.sock = self._create_connection(
+/usr/local/anaconda3/lib/python3.9/socket.py:844: in create_connection
+    raise err
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+address = ('127.0.0.1', 18110), timeout = 10, source_address = None
+
+    def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT,
+                          source_address=None):
+        """Connect to *address* and return the socket object.
+    
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        A host of '' or port 0 tells the OS to use the default.
+        """
+    
+        host, port = address
+        err = None
+        for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket(af, socktype, proto)
+                if timeout is not _GLOBAL_DEFAULT_TIMEOUT:
+                    sock.settimeout(timeout)
+                if source_address:
+                    sock.bind(source_address)
+>               sock.connect(sa)
+E               ConnectionRefusedError: [Errno 111] Connection refused
+
+/usr/local/anaconda3/lib/python3.9/socket.py:832: ConnectionRefusedError
+
+During handling of the above exception, another exception occurred:
+
+    def test_outcomes_precedence_and_provenance():
+        outcomes = []
+    
+>       status, unknown = _risk_json("GET", "/api/v1/risk/accounts/99999")
+
+tests/integration/test_integration_risk_http.py:255: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_integration_risk_http.py:108: in _risk_json
+    status, response = _request(
+tests/integration/test_integration_risk_http.py:101: in _request
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:214: in urlopen
+    return opener.open(url, data, timeout)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:517: in open
+    response = self._open(req, data)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:534: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:494: in _call_chain
+    result = func(*args)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1375: in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <urllib.request.HTTPHandler object at 0x7fcb2dc84fa0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x7fcb2dc4c3a0>, http_conn_args = {}
+host = '127.0.0.1:18110'
+h = <http.client.HTTPConnection object at 0x7fcb2dc84b80>
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+                h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+            except OSError as err: # timeout error
+>               raise URLError(err)
+E               urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1349: URLError
+________ test_caller_positions_match_account_22214_and_mark_provenance _________
+
+self = <urllib.request.HTTPHandler object at 0x7fcb2dc84fa0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x7fcb2db73d60>, http_conn_args = {}
+host = '127.0.0.1:18110'
+h = <http.client.HTTPConnection object at 0x7fcb2db73d90>
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+>               h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1346: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/anaconda3/lib/python3.9/http/client.py:1279: in request
+    self._send_request(method, url, body, headers, encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1325: in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1274: in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1034: in _send_output
+    self.send(msg)
+/usr/local/anaconda3/lib/python3.9/http/client.py:974: in send
+    self.connect()
+/usr/local/anaconda3/lib/python3.9/http/client.py:945: in connect
+    self.sock = self._create_connection(
+/usr/local/anaconda3/lib/python3.9/socket.py:844: in create_connection
+    raise err
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+address = ('127.0.0.1', 18110), timeout = 10, source_address = None
+
+    def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT,
+                          source_address=None):
+        """Connect to *address* and return the socket object.
+    
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        A host of '' or port 0 tells the OS to use the default.
+        """
+    
+        host, port = address
+        err = None
+        for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket(af, socktype, proto)
+                if timeout is not _GLOBAL_DEFAULT_TIMEOUT:
+                    sock.settimeout(timeout)
+                if source_address:
+                    sock.bind(source_address)
+>               sock.connect(sa)
+E               ConnectionRefusedError: [Errno 111] Connection refused
+
+/usr/local/anaconda3/lib/python3.9/socket.py:832: ConnectionRefusedError
+
+During handling of the above exception, another exception occurred:
+
+    def test_caller_positions_match_account_22214_and_mark_provenance():
+>       status, account_result = _risk_json("GET", "/api/v1/risk/accounts/22214")
+
+tests/integration/test_integration_risk_http.py:367: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_integration_risk_http.py:108: in _risk_json
+    status, response = _request(
+tests/integration/test_integration_risk_http.py:101: in _request
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:214: in urlopen
+    return opener.open(url, data, timeout)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:517: in open
+    response = self._open(req, data)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:534: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:494: in _call_chain
+    result = func(*args)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1375: in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <urllib.request.HTTPHandler object at 0x7fcb2dc84fa0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x7fcb2db73d60>, http_conn_args = {}
+host = '127.0.0.1:18110'
+h = <http.client.HTTPConnection object at 0x7fcb2db73d90>
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+                h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+            except OSError as err: # timeout error
+>               raise URLError(err)
+E               urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1349: URLError
+________________ test_http_results_match_the_independent_oracle ________________
+
+self = <urllib.request.HTTPHandler object at 0x7fcb2dc84fa0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x7fcb2db60520>, http_conn_args = {}
+host = '127.0.0.1:18110'
+h = <http.client.HTTPConnection object at 0x7fcb2db605e0>
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+>               h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1346: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/anaconda3/lib/python3.9/http/client.py:1279: in request
+    self._send_request(method, url, body, headers, encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1325: in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1274: in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1034: in _send_output
+    self.send(msg)
+/usr/local/anaconda3/lib/python3.9/http/client.py:974: in send
+    self.connect()
+/usr/local/anaconda3/lib/python3.9/http/client.py:945: in connect
+    self.sock = self._create_connection(
+/usr/local/anaconda3/lib/python3.9/socket.py:844: in create_connection
+    raise err
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+address = ('127.0.0.1', 18110), timeout = 10, source_address = None
+
+    def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT,
+                          source_address=None):
+        """Connect to *address* and return the socket object.
+    
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        A host of '' or port 0 tells the OS to use the default.
+        """
+    
+        host, port = address
+        err = None
+        for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket(af, socktype, proto)
+                if timeout is not _GLOBAL_DEFAULT_TIMEOUT:
+                    sock.settimeout(timeout)
+                if source_address:
+                    sock.bind(source_address)
+>               sock.connect(sa)
+E               ConnectionRefusedError: [Errno 111] Connection refused
+
+/usr/local/anaconda3/lib/python3.9/socket.py:832: ConnectionRefusedError
+
+During handling of the above exception, another exception occurred:
+
+    def test_http_results_match_the_independent_oracle():
+        dates, closes = _published_history()
+    
+        for account_id, positions in SEEDED_ACCOUNTS:
+>           status, result = _risk_json(
+                "GET", "/api/v1/risk/accounts/{}".format(account_id)
+            )
+
+tests/integration/test_integration_risk_http.py:402: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_integration_risk_http.py:108: in _risk_json
+    status, response = _request(
+tests/integration/test_integration_risk_http.py:101: in _request
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:214: in urlopen
+    return opener.open(url, data, timeout)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:517: in open
+    response = self._open(req, data)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:534: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:494: in _call_chain
+    result = func(*args)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1375: in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <urllib.request.HTTPHandler object at 0x7fcb2dc84fa0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x7fcb2db60520>, http_conn_args = {}
+host = '127.0.0.1:18110'
+h = <http.client.HTTPConnection object at 0x7fcb2db605e0>
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+                h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+            except OSError as err: # timeout error
+>               raise URLError(err)
+E               urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1349: URLError
+____________ test_seeded_account_results_arrive_within_five_seconds ____________
+
+self = <urllib.request.HTTPHandler object at 0x7fcb2dc84fa0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x7fcb2d9c6e50>, http_conn_args = {}
+host = '127.0.0.1:18110'
+h = <http.client.HTTPConnection object at 0x7fcb2d9c6d60>
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+>               h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1346: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/anaconda3/lib/python3.9/http/client.py:1279: in request
+    self._send_request(method, url, body, headers, encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1325: in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1274: in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1034: in _send_output
+    self.send(msg)
+/usr/local/anaconda3/lib/python3.9/http/client.py:974: in send
+    self.connect()
+/usr/local/anaconda3/lib/python3.9/http/client.py:945: in connect
+    self.sock = self._create_connection(
+/usr/local/anaconda3/lib/python3.9/socket.py:844: in create_connection
+    raise err
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+address = ('127.0.0.1', 18110), timeout = 6, source_address = None
+
+    def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT,
+                          source_address=None):
+        """Connect to *address* and return the socket object.
+    
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        A host of '' or port 0 tells the OS to use the default.
+        """
+    
+        host, port = address
+        err = None
+        for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket(af, socktype, proto)
+                if timeout is not _GLOBAL_DEFAULT_TIMEOUT:
+                    sock.settimeout(timeout)
+                if source_address:
+                    sock.bind(source_address)
+>               sock.connect(sa)
+E               ConnectionRefusedError: [Errno 111] Connection refused
+
+/usr/local/anaconda3/lib/python3.9/socket.py:832: ConnectionRefusedError
+
+During handling of the above exception, another exception occurred:
+
+    def test_seeded_account_results_arrive_within_five_seconds():
+        for account_id, _ in SEEDED_ACCOUNTS:
+            started = time.monotonic()
+>           status, result = _risk_json(
+                "GET", "/api/v1/risk/accounts/{}".format(account_id), timeout=6
+            )
+
+tests/integration/test_integration_risk_http.py:481: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_integration_risk_http.py:108: in _risk_json
+    status, response = _request(
+tests/integration/test_integration_risk_http.py:101: in _request
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:214: in urlopen
+    return opener.open(url, data, timeout)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:517: in open
+    response = self._open(req, data)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:534: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:494: in _call_chain
+    result = func(*args)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1375: in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <urllib.request.HTTPHandler object at 0x7fcb2dc84fa0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x7fcb2d9c6e50>, http_conn_args = {}
+host = '127.0.0.1:18110'
+h = <http.client.HTTPConnection object at 0x7fcb2d9c6d60>
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+                h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+            except OSError as err: # timeout error
+>               raise URLError(err)
+E               urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1349: URLError
+_________ test_repeated_requests_have_identical_numeric_result_blocks __________
+
+self = <urllib.request.HTTPHandler object at 0x7fcb2dc84fa0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x7fcb2db279d0>, http_conn_args = {}
+host = '127.0.0.1:18110'
+h = <http.client.HTTPConnection object at 0x7fcb2db27940>
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+>               h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1346: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/anaconda3/lib/python3.9/http/client.py:1279: in request
+    self._send_request(method, url, body, headers, encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1325: in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1274: in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+/usr/local/anaconda3/lib/python3.9/http/client.py:1034: in _send_output
+    self.send(msg)
+/usr/local/anaconda3/lib/python3.9/http/client.py:974: in send
+    self.connect()
+/usr/local/anaconda3/lib/python3.9/http/client.py:945: in connect
+    self.sock = self._create_connection(
+/usr/local/anaconda3/lib/python3.9/socket.py:844: in create_connection
+    raise err
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+address = ('127.0.0.1', 18110), timeout = 10, source_address = None
+
+    def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT,
+                          source_address=None):
+        """Connect to *address* and return the socket object.
+    
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        A host of '' or port 0 tells the OS to use the default.
+        """
+    
+        host, port = address
+        err = None
+        for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket(af, socktype, proto)
+                if timeout is not _GLOBAL_DEFAULT_TIMEOUT:
+                    sock.settimeout(timeout)
+                if source_address:
+                    sock.bind(source_address)
+>               sock.connect(sa)
+E               ConnectionRefusedError: [Errno 111] Connection refused
+
+/usr/local/anaconda3/lib/python3.9/socket.py:832: ConnectionRefusedError
+
+During handling of the above exception, another exception occurred:
+
+    def test_repeated_requests_have_identical_numeric_result_blocks():
+        positions = {
+            "positions": [
+                {"security": "C", "quantity": -2000},
+                {"security": "IBM", "quantity": -100},
+                {"security": "MS", "quantity": 1000},
+            ]
+        }
+    
+>       first_status, first = _risk_json("POST", "/api/v1/risk/positions", positions)
+
+tests/integration/test_integration_risk_http.py:507: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/integration/test_integration_risk_http.py:108: in _risk_json
+    status, response = _request(
+tests/integration/test_integration_risk_http.py:101: in _request
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:214: in urlopen
+    return opener.open(url, data, timeout)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:517: in open
+    response = self._open(req, data)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:534: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:494: in _call_chain
+    result = func(*args)
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1375: in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <urllib.request.HTTPHandler object at 0x7fcb2dc84fa0>
+http_class = <class 'http.client.HTTPConnection'>
+req = <urllib.request.Request object at 0x7fcb2db279d0>, http_conn_args = {}
+host = '127.0.0.1:18110'
+h = <http.client.HTTPConnection object at 0x7fcb2db27940>
+
+    def do_open(self, http_class, req, **http_conn_args):
+        """Return an HTTPResponse object for the request, using http_class.
+    
+        http_class must implement the HTTPConnection API from http.client.
+        """
+        host = req.host
+        if not host:
+            raise URLError('no host given')
+    
+        # will parse host:port
+        h = http_class(host, timeout=req.timeout, **http_conn_args)
+        h.set_debuglevel(self._debuglevel)
+    
+        headers = dict(req.unredirected_hdrs)
+        headers.update({k: v for k, v in req.headers.items()
+                        if k not in headers})
+    
+        # TODO(jhylton): Should this be redesigned to handle
+        # persistent connections?
+    
+        # We want to make an HTTP/1.1 request, but the addinfourl
+        # class isn't prepared to deal with a persistent connection.
+        # It will try to read all remaining data from the socket,
+        # which will block while the server waits for the next request.
+        # So make sure the connection gets closed after the (only)
+        # request.
+        headers["Connection"] = "close"
+        headers = {name.title(): val for name, val in headers.items()}
+    
+        if req._tunnel_host:
+            tunnel_headers = {}
+            proxy_auth_hdr = "Proxy-Authorization"
+            if proxy_auth_hdr in headers:
+                tunnel_headers[proxy_auth_hdr] = headers[proxy_auth_hdr]
+                # Proxy-Authorization should not be sent to origin
+                # server.
+                del headers[proxy_auth_hdr]
+            h.set_tunnel(req._tunnel_host, headers=tunnel_headers)
+    
+        try:
+            try:
+                h.request(req.get_method(), req.selector, req.data, headers,
+                          encode_chunked=req.has_header('Transfer-encoding'))
+            except OSError as err: # timeout error
+>               raise URLError(err)
+E               urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+
+/usr/local/anaconda3/lib/python3.9/urllib/request.py:1349: URLError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/integration/test_integration_risk_http.py::test_traderx_baseline_responses_are_preserved
+FAILED tests/integration/test_integration_risk_http.py::test_outcomes_precedence_and_provenance
+FAILED tests/integration/test_integration_risk_http.py::test_caller_positions_match_account_22214_and_mark_provenance
+FAILED tests/integration/test_integration_risk_http.py::test_http_results_match_the_independent_oracle
+FAILED tests/integration/test_integration_risk_http.py::test_seeded_account_results_arrive_within_five_seconds
+FAILED tests/integration/test_integration_risk_http.py::test_repeated_requests_have_identical_numeric_result_blocks
+5 failed, 1 passed in 0.93s
+exit 1
