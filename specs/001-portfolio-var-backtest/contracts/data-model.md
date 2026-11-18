@@ -49,7 +49,7 @@ and the quantile rule "linear interpolation, position (n−1)p".
 | lambda, pool_size, warmup, confidence, horizon_days, quantile_rule | ModelSettings |
 | as_of_date | "2026-11-13" |
 | position_source | "TraderX account" or "caller-supplied" |
-| positions_read_at | UTC ISO-8601 timestamp for the TraderX path; null for caller-supplied input or when nothing was read |
+| positions_read_at | TraderX account path: a UTC ISO-8601 timestamp string (the time the position lookup returned) for every outcome reached after the account was found (OK, NO_OPEN_POSITIONS, MISSING_PRICE_HISTORY, ZERO_VOLATILITY), including when the lookup returned an empty list. null for caller-supplied input, and for INVALID_REQUEST, POSITIONS_UNAVAILABLE and ACCOUNT_NOT_FOUND. (Clarified 2026-11-18, before the tests were committed.) |
 
 ## CurrentRisk (spec M5, day N+1; FR-001 and FR-002)
 
