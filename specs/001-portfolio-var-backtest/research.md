@@ -182,15 +182,19 @@ Checks run in this order, and the first match wins:
   2. `specs/001-portfolio-var-backtest/spec.md`
   3. `specs/001-portfolio-var-backtest/contracts/calculation-api.md`
   4. `specs/001-portfolio-var-backtest/contracts/http-api.md`
-  5. `specs/001-portfolio-var-backtest/data-model.md`
-  6. `specs/001-portfolio-var-backtest/quickstart.md`
+  5. `specs/001-portfolio-var-backtest/contracts/data-model.md`
+  6. `specs/001-portfolio-var-backtest/contracts/test-harness.md`
   7. From `data/`, the full text of `synthetic_prices_seed20261117.meta.json` and `SHA256SUMS`,
      plus the CSV's header line and its first and last 3 rows (to show the format). The complete
      601-row CSV is not pasted into the prompt. The tests read it from its path when they run.
-- **Not given to the validator**: `research.md`, `plan.md`, `tasks.md`, anything under
-  `risk-service/`, `data/generate_synthetic_prices.py`, and `validation/prestudy_coverage.py`.
-  This is why every rule the tests depend on, including the outcome precedence (R8), must be in
-  the spec, the contracts, the data model or the quickstart.
+- **Why this list**: it is exactly what constitution V allows, the constitution, the spec and the
+  contracts, plus the data sample. `data-model.md` was moved into `contracts/`. The run
+  information the tests need (commands, environment variables, tiers, file formats) is in
+  `contracts/test-harness.md`, with no expected values.
+- **Not given to the validator**: `quickstart.md`, `research.md`, `plan.md`, `tasks.md`,
+  anything under `risk-service/`, `data/generate_synthetic_prices.py`, and
+  `validation/prestudy_coverage.py`. This is why every rule the tests depend on, including the
+  outcome precedence (R8), must be in the spec or the contracts.
 - **Enforcement**: `run_validator.py` builds each prompt from exactly this list. It writes the
   list of paths and their SHA-256 values into every round's `request.json`, so a reviewer can
   confirm that nothing else was sent.

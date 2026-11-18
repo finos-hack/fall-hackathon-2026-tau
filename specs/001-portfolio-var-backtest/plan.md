@@ -45,7 +45,7 @@ No NEEDS CLARIFICATION items remain; see [research.md](research.md) R1–R10.
 | **I. Spec-first** | The feature pack is `specs/001-portfolio-var-backtest/` (spec, plan, tasks). No implementation until the author approves `tasks.md`. One prior artifact, the data generator, is recorded under Complexity Tracking. | PASS, with one recorded deviation |
 | **II. Additive delta** | **Baseline files touched: none.** All new code is in `risk-service/`, `deploy/` and `tests/`. The local-only port bindings and the new service are in the new file `deploy/tau.override.yml`, not in `traderx/`. Check: `git diff fbdfb38 --stat -- traderx/` is empty. Existing APIs are only called, with GET. | PASS |
 | **III. Deterministic, offline** | Seed 20261117 and a frozen CSV with SHA-256 checked at startup. Standard library only, no pip or CDN. Fixed summation order, no parallelism. A locally present base image. | PASS |
-| **IV. Evidence-gated** | `/speckit-tasks` produces `traceability.md` (FR → code → test). README claims point to test names or recorded outputs. | PASS (planned) |
+| **IV. Evidence-gated** | `traceability.md` (FR → code → test) is created in T036. README claims point to test names or recorded outputs. | PASS (planned) |
 | **V. Verifiable without trusting the author** | See Verification Design below: (a) V1 hand example; (b) V2 known-answer; (c) `tests/oracle/`, written by the validator model. Tolerances were pre-registered in the spec. The implementing side never edits `tests/`. The prompt and raw output are committed. | PASS (planned) |
 | **VI. No look-ahead** | The calculation contract guarantees that VaRₜ depends only on x₁…x_{t−1}. V4 perturbs closes on or after t for t = 351, 600 and at least one more day. | PASS |
 | **Constraints** | One new service plus a static page; no Angular change; 127.0.0.1 only; synthetic label on every response and on the page; DCO sign-off by the author only. | PASS |
@@ -68,9 +68,9 @@ No NEEDS CLARIFICATION items remain; see [research.md](research.md) R1–R10.
     `seed 20261117` and `num_ctx 65536`.
   - Three rounds: unit, oracle, integration (research R9).
   - Its inputs are exactly the canonical list in research.md R9, which is not repeated here. In
-    short: the constitution, spec, both contracts, data model and quickstart, plus the data
-    file's metadata, checksums and format sample. It never sees research.md, plan.md or
-    `risk-service/`.
+    short: the constitution, spec, and the four contracts (`calculation-api.md`, `http-api.md`,
+    `data-model.md`, `test-harness.md`), plus the data file's metadata, checksums and format
+    sample. It never sees quickstart.md, research.md, plan.md or `risk-service/`.
   - The author runs the runner, which writes only under `tests/`.
 - **Evidence**:
   - every round's prompt, request and raw response are committed to
@@ -98,11 +98,12 @@ specs/001-portfolio-var-backtest/
 ├── spec.md, input.md
 ├── plan.md                 # this file
 ├── research.md             # Phase 0
-├── data-model.md           # Phase 1
-├── quickstart.md           # Phase 1
-├── contracts/
+├── quickstart.md           # Phase 1 (run guide for people; not a validator input)
+├── contracts/              # validator inputs (with spec.md and the constitution)
 │   ├── calculation-api.md  # pure-function contract (tier-1 tests, oracle)
-│   └── http-api.md         # JSON API, outcomes, provenance, page
+│   ├── http-api.md         # JSON API, outcomes, provenance, page
+│   ├── data-model.md       # entities and fields (moved here from the feature root)
+│   └── test-harness.md     # paths, env vars, commands, tiers, file formats; no expected values
 ├── data/                   # frozen synthetic history (FR-014) + generator + SHA256SUMS
 ├── validation/
 │   ├── prestudy_coverage.py
@@ -165,7 +166,8 @@ All wiring is in the new `deploy/tau.override.yml`, which:
 
 ## Post-design Constitution re-check
 
-Re-checked after writing data-model.md, contracts/ and quickstart.md. Nothing changed:
+Re-checked after writing contracts/ (including contracts/data-model.md and
+contracts/test-harness.md) and quickstart.md. Nothing changed:
 
 - no baseline edits were introduced;
 - every V1–V6 item maps to a test location and owner;

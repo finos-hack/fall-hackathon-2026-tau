@@ -22,6 +22,11 @@
 - Q: Besides looking up an account in TraderX, should the risk calculation also accept a position list supplied directly by the caller and return the same structured result? → A: Yes. A documented, read-only entry point takes a position list and returns the same result shape and outcomes as the account lookup, with provenance marking the positions as caller-supplied. It is not shown on the page (FR-020).
 - Q: Should the synthetic price-history file be generated once and committed before the validator model starts writing tests, so that it counts as a fixed input like the spec? → A: Yes. A generator script and its output file, with a SHA-256 checksum, are committed under the feature folder before validation starts. Both implementations and all tests read that file, and any later change is a recorded amendment (FR-014).
 - Q: Which date should the current VaR be labelled with: the as-of date of the data it uses, or the day it is a forecast for? → A: Both, as separate labelled fields: "data as of 2026-11-13 close" and "forecast for 2026-11-16" (FR-002).
+- Amendment (H1, /speckit-analyze): SC-007 narrowed. Account and position lookups for the seeded accounts must return the same responses before and after, ignoring `updated`. The price lookup must return the same set of tickers and the same response shape; its values move, because price-publisher is a random walk. The "before" responses are captured into `specs/001-portfolio-var-backtest/validation/runs/baseline-before.json` before the baseline stack is stopped (SC-007).
+- Amendment (H2, /speckit-analyze): in V2 and V4 the test fixes its own random seeds and writes them in the test file (V2: one seed per generated series, e.g. 0–399; V4: seed 20261117 for the perturbation factors). Only the pass band is pre-registered, not the individual draws (V2, V4).
+- Amendment (H3, /speckit-analyze): V5 tolerance. LR and p-value agree with the table to within ±0.00005; the decision, direction and Basel zone match exactly (V5).
+- Amendment (M2, /speckit-analyze): POSITIONS_UNAVAILABLE covers a failure of either TraderX lookup (account or position), and of the account list (edge cases, FR-011).
+- Amendment (M3, /speckit-analyze): SC-008 compares the `current`, `track_record` and `verdict` blocks only; `provenance.positions_read_at` is excluded (SC-008).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -157,8 +162,10 @@ outcome) and confirm that every one carries the full provenance label with the w
   floored. The hand-checkable example defines the arithmetic.
 - **P&L exactly equal to −VaR**: not a breach (breach requires strict inequality on unrounded
   values).
-- **Position-service unavailable**: explicit "positions unavailable" outcome, never a VaR computed
-  on an empty or stale position list.
+- **TraderX unavailable** (the position service, the account service, or the account list
+  cannot be reached): explicit "positions unavailable" outcome (`POSITIONS_UNAVAILABLE`), never a
+  VaR computed on an empty or stale position list. The same outcome covers a failure of either
+  TraderX lookup (account or position) and of the account list.
 
 ## Requirements *(mandatory)*
 
@@ -204,7 +211,9 @@ outcome) and confirm that every one carries the full provenance label with the w
   "missing price history" outcome naming every such security. Partial VaR is not allowed.
 - **FR-011**: Outcomes FR-008, FR-009 and FR-010, the zero-volatility outcome, and the
   positions-unavailable outcome MUST each be distinguishable by machine and by a person reading the
-  page, from each other and from a successful result.
+  page, from each other and from a successful result. The positions-unavailable outcome
+  (`POSITIONS_UNAVAILABLE`) covers a failure of either TraderX lookup, account or position, and
+  a failure of the account list.
 
 **Integrity**
 
@@ -352,6 +361,9 @@ n = 5, p = 0.01. Closes C₀ … C₈ = 100, 101, 99, 100, 97, 98, 99, 96, 93.
   makes the true standardized residuals i.i.d. by construction.
 - **Run:** 400 independent series, each with W = 100, n = 250 and B = 250, for 100,000 forecasts in
   total.
+- **Seeds:** the test fixes its own random seeds and writes them in the test file, one seed per
+  generated series (for example 0–399). Only the pass band below is pre-registered, not the
+  individual draws.
 - **Pass:** the pooled breach rate lies in **[1.24%, 1.54%]**. This band is about 1.39% ± 5
   standard errors; the empirical standard error is about 0.031 percentage points.
 - **The band excludes 1.00%.** An implementation that achieves exactly nominal coverage under this
@@ -373,7 +385,9 @@ only. On the published synthetic history and the seeded accounts 22214 and 52355
 
 **V4 — No look-ahead perturbation.** For at least 3 days t in the backtest window, including the
 first (351) and the last (600), multiply every close on or after t by a random factor in
-[0.5, 1.5]. The forecast VaRₜ must be bit-for-bit identical before and after.
+[0.5, 1.5]. The forecast VaRₜ must be bit-for-bit identical before and after. The test fixes the
+seed for the perturbation factors at 20261117 and writes it in the test file. Only the pass
+criterion is pre-registered, not the individual draws.
 
 **V5 — Kupiec and Basel reference values** (T = 250, p = 0.01):
 
@@ -388,6 +402,9 @@ first (351) and the last (600), multiply every close on or after t by a random f
 | 6 | 3.5554 | 0.0594 | do not reject | amber |
 | 7 | 5.4970 | 0.0190 | reject (too many) | amber |
 | 10 | 12.9555 | 0.0003 | reject (too many) | red |
+
+**Tolerance:** LR and p-value agree with the table to within ±0.00005; the decision, direction and
+Basel zone match exactly.
 
 **V6 — Outcomes.** The following each return their distinct outcome with full provenance and no
 VaR number:
@@ -423,11 +440,16 @@ coverage in M7, not from a flaw in the model, and the result view says so next t
 - **SC-005**: 100% of perturbation checks (V4) leave the forecast unchanged.
 - **SC-006**: 100% of result types, error outcomes included, carry the synthetic label and full
   provenance. A reviewer finds no number shown without its basis.
-- **SC-007**: The existing TraderX account, position and price lookups return the same responses
-  for the seeded accounts before and after the feature, and the diff against the baseline commit
-  shows only new files plus the wiring edits listed in the plan.
+- **SC-007**: The existing TraderX account and position lookups for the seeded accounts return
+  the same responses before and after the feature, ignoring the `updated` field. The price lookup
+  returns the same set of tickers and the same response shape; its values move, because
+  price-publisher is a random walk. The "before" responses are captured into
+  `specs/001-portfolio-var-backtest/validation/runs/baseline-before.json` before the baseline stack
+  is stopped. The diff against the baseline commit shows only new files plus the wiring edits
+  listed in the plan.
 - **SC-008**: Two runs from a clean start produce byte-identical numeric results for the same
-  positions.
+  positions. The comparison covers the `current`, `track_record` and `verdict` blocks only;
+  `provenance.positions_read_at` is excluded.
 
 ## Assumptions
 

@@ -32,8 +32,24 @@ PYTHONPATH=risk-service python3 -m pytest tests/unit tests/oracle -q
 | V5 Kupiec and Basel | table values to 4 decimal places; zones green, amber, red |
 | V3 oracle vs core | accounts 22214 and 52355 as caller-supplied positions: every VaR within $0.01, breach flags identical |
 
-Before `/speckit-implement`, the same command must **fail**: the package does not exist yet, so
-imports fail (constitution workflow, step 4).
+**Red run** (task T012, constitution workflow step 4): before implementation, every test folder
+must **fail**, and the output is saved to `validation/validator/red-run.txt`.
+
+```bash
+PYTHONPATH=risk-service python3 -m pytest tests/unit tests/oracle -q
+RISK_BASE_URL=http://127.0.0.1:18110 TRADERX_BASE_URL=http://127.0.0.1:8080 \
+  PYTHONPATH=risk-service python3 -m pytest tests/integration -q    # risk-service NOT running
+```
+
+- `tests/unit` and `tests/oracle`: tests that use `risk_service.core` fail with
+  `ModuleNotFoundError` or `ImportError`, because the package has no `core.py` yet.
+- `tests/integration`: requests to the risk service fail with **connection refused**, because
+  nothing is listening on 18110. That expected failure is recorded in `red-run.txt`.
+- Every test that passes in the integration run, with risk-service not running, is listed in
+  `red-run.txt` with the reason. A test may legitimately pass only if it calls TraderX alone and
+  never `RISK_BASE_URL` (for example the SC-007 baseline comparison against
+  `baseline-before.json`). A test that passes while calling `RISK_BASE_URL` is a finding for
+  `disputes.md`.
 
 ## 3. Start the stack
 
@@ -46,7 +62,8 @@ curl -s http://127.0.0.1:18110/health           # {"status":"ok","data_sha256":"
 ## 4. Tier 2: integration tests (stack running)
 
 ```bash
-RISK_BASE_URL=http://127.0.0.1:18110 PYTHONPATH=risk-service python3 -m pytest tests/integration -q
+RISK_BASE_URL=http://127.0.0.1:18110 TRADERX_BASE_URL=http://127.0.0.1:8080 \
+  PYTHONPATH=risk-service python3 -m pytest tests/integration -q
 ```
 
 | Check | Expected |
@@ -57,7 +74,7 @@ RISK_BASE_URL=http://127.0.0.1:18110 PYTHONPATH=risk-service python3 -m pytest t
 | `GET …/accounts/44044` | 200 `NO_OPEN_POSITIONS`, no VaR |
 | POST `[{"security":"AAPL","quantity":10},{"security":"ZZZZ","quantity":5}]` | 422 `MISSING_PRICE_HISTORY`, `missing_securities: ["ZZZZ"]` |
 | Two runs of the same request | numeric fields byte-identical (SC-008) |
-| Baseline lookups (`/account/22214`, `/positions/22214`, `/account/`) on 18088 and 18090 | same responses as the baseline stack (SC-007) |
+| Baseline lookups through the ingress on 8080 (the paths in `contracts/test-harness.md` § Baseline responses), compared with `validation/runs/baseline-before.json` | Account and position lookups for the seeded accounts: same responses as before, ignoring the `updated` field. Price lookup: same set of tickers and same response shape; the values move, because price-publisher is a random walk (SC-007) |
 
 Live positions can change when trades are booked. Numeric comparisons therefore use the
 caller-supplied path with the seeded positions. The account path is checked for shape, outcome
