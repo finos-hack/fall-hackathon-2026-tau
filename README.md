@@ -1,8 +1,13 @@
-# {project name}
+# Pre-registered VaR for TraderX
 
-**Hackathon Track:** {track name/number}
+**Hackathon Track:** Track 1 — TraderX
 
-Short blurb about what your project does.
+A risk service for TraderX that shows each account's one-day 99% VaR (filtered historical
+simulation), a 250-day backtest, and a Kupiec / Basel traffic-light verdict. It is built with a
+pre-registered spec-driven workflow: the expected numbers were written into the spec before any
+code, one AI model implements, and a different AI model writes the tests and an independent
+second implementation from the spec alone. Every disagreement is recorded, not hidden.
+Prices are synthetic and labelled as such.
 
 ## Installation
 
