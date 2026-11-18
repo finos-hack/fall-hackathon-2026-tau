@@ -123,7 +123,7 @@ The validator listed these under "Open questions"; they are true gaps in the har
 - **Why the limit is acceptable**: the integrity of `tests/` does not rest on the deny rule alone.
   `tests.sha256` (0ddb328) is checked again at the gate (T037), and any change under `tests/` would
   show in git history after 58abb74.
-- **Decision (Author)**: <accept as passed with this limit recorded / re-run P3–P6 outside auto mode>
+- **Decision (Author)**: <accept as passed with this limit recorded >
 
 ## D-011 — Correction to D-007: the accepted tests do cover ZERO_VOLATILITY over HTTP
 
@@ -136,3 +136,12 @@ The validator listed these under "Open questions"; they are true gaps in the har
   Both are checked by hand at T037.
 - Recorded by Claude during implementation, 2026-11-18. `traceability.md` reflects the corrected
   coverage.
+
+## D-012 — The T010 commit's Assisted-by line is not a git trailer
+
+- Commit 58abb74 (the only commit touching `tests/`) carries `Assisted-by: gpt-5.6-terra via
+  codex-cli 0.151.0` in its message, but as a separate paragraph: the commit command Claude
+  supplied used one `-m` per line. Git therefore does not parse it as a trailer, and
+  `git log --format='%(trailers:key=Assisted-by)'` prints nothing for it.
+- The commit is pushed and is not rewritten. The gate (T037) checks the message body for the
+  `Assisted-by:` line in addition to the trailer, and records both results.
