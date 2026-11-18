@@ -265,9 +265,19 @@ can use a small pool and warm-up.
     ticker's `closePrice` in the TraderX price snapshot.
   - **Publication:** the generated closes are published as data (FR-014). The data, not the
     generator, is authoritative.
-  - **File format:** CSV with columns `date,ticker,close`, one row per ticker per day, sorted by
-    date then ticker, closes written with 6 decimal places. The values as written in the file are
-    the inputs; no implementation uses higher-precision values from the generator.
+    - File: `specs/001-portfolio-var-backtest/data/synthetic_prices_seed20261117.csv`. It is wide
+      format: a `date` column, then one column per ticker in snapshot order. It has 601 rows from
+      2024-07-26 to 2026-11-13, with closes at 4 decimal places. The rounded values are the
+      prices.
+    - SHA-256: `9ea2eab18bc0bf108fffb90245fd7f51a07e0fa16e52d49564e20c50e0718ce3` (also in
+      `data/SHA256SUMS`).
+    - Generator: `data/generate_synthetic_prices.py`. It starts the factor variance at its
+      long-run value (h₁ = 0.01²), draws u[600] and then e[600×20] from
+      `default_rng(20261117)`, and has zero drift. Run with `--check` it rebuilds the file in
+      memory and compares it with the committed one. Generation parameters are in
+      `data/synthetic_prices_seed20261117.meta.json`.
+  - **Precision:** the values as written in the file are the inputs; no implementation uses
+    higher-precision values from the generator.
   - **Anchor check:** the generator MUST stop with an error unless every as-of close in the file
     equals that ticker's snapshot `closePrice`.
 - **M2 — Portfolio P&L.** For s = 1 … N: xₛ = Σᵢ qᵢ · (Pᵢ,ₛ − Pᵢ,ₛ₋₁). Dollar P&L uses today's
