@@ -37,6 +37,11 @@ account for finite-sample properties of the estimator (for example, the order-st
 coverage of an empirical quantile), not only the nominal level. When a result misses its
 expectation, the miss MUST be recorded with its cause; tolerances MUST NOT be widened after the
 fact to make a test pass.
+Tests and the independent implementation in (c) MUST be authored by a different AI model
+than the one that writes the implementation, working only from the constitution, the spec,
+and the contracts, never from the implementation source. The implementing side MUST NOT
+edit files under `tests/`; a suspected test error is recorded in `disputes.md` and decided by
+the human author. The prompt given to the validator model and its raw output MUST be committed.
 
 ### VI. No Look-Ahead
 A risk figure for date t MUST use only data observable before t. Each backtest MUST include a
@@ -60,7 +65,8 @@ test that perturbs data on or after t and shows the figure for t does not change
 2. `/speckit-plan`: plan lists baseline files touched (Principle II) and the verification design
    (Principle V).
 3. `/speckit-tasks` → `/speckit-analyze`: every FR maps to at least one task and one test.
-4. Author approves `tasks.md`; only then `/speckit-implement`.
+4. Author approves `tasks.md`. Validator-authored tests are committed first and MUST fail
+   against an empty implementation; only then `/speckit-implement`.
 5. Gate before submission: all tests pass, the traceability table is complete, and the stack
    starts from a clean checkout with the documented command.
 
@@ -72,4 +78,4 @@ Versioning: MAJOR for removing or redefining a principle, MINOR for adding a pri
 section, PATCH for wording. `/speckit-analyze` and review before each commit check compliance;
 any deviation MUST be written down in `plan.md` with its reason.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-17
+**Version**: 1.1.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-17
