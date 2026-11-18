@@ -2,5 +2,6 @@
 FROM python:3.10-slim@sha256:2ee0fb8794bf82af1b2db168ada5869b4c27d17720dd3b155b56c111fb4a38ae
 WORKDIR /app
 COPY risk_service /app/risk_service
+ENV RISK_BIND_HOST=0.0.0.0
 EXPOSE 18110
 CMD ["python", "-m", "risk_service.server"]

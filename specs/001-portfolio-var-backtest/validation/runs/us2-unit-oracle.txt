@@ -1,0 +1,5 @@
+# T024 regression, tests/unit + tests/oracle, 2026-11-18T23:16:19Z, HEAD 9eb38d0 + uncommitted risk-service/ (core.py sha256 371405429f72)
+$ PYTHONPATH=risk-service python3 -m pytest tests/unit tests/oracle -q
+....................                                                     [100%]
+20 passed in 2.61s
+exit 0

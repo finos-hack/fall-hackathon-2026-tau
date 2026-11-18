@@ -124,3 +124,15 @@ The validator listed these under "Open questions"; they are true gaps in the har
   `tests.sha256` (0ddb328) is checked again at the gate (T037), and any change under `tests/` would
   show in git history after 58abb74.
 - **Decision (Author)**: <accept as passed with this limit recorded / re-run P3–P6 outside auto mode>
+
+## D-011 — Correction to D-007: the accepted tests do cover ZERO_VOLATILITY over HTTP
+
+- D-007 was written from the review of round 3 retry 1. The accepted retry 2
+  (`tests/integration/test_integration_risk_http.py`) reaches `ZERO_VOLATILITY` over HTTP by
+  posting the smallest subnormal positive quantity for a ticker whose warm-up P&L then rounds to
+  exactly zero, and also asserts the exact verdict note (FR-016), `data_as_of`, `forecast_for` and
+  every row date.
+- The remaining HTTP gap is `POSITIONS_UNAVAILABLE` (503), and SC-008 across two clean starts.
+  Both are checked by hand at T037.
+- Recorded by Claude during implementation, 2026-11-18. `traceability.md` reflects the corrected
+  coverage.

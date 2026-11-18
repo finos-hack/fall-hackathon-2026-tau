@@ -1,0 +1,5 @@
+# T020 regression, tests/unit, 2026-11-18T23:16:16Z, HEAD 9eb38d0 + uncommitted risk-service/ (core.py sha256 371405429f72)
+$ PYTHONPATH=risk-service python3 -m pytest tests/unit -q
+..................                                                       [100%]
+18 passed in 2.64s
+exit 0
