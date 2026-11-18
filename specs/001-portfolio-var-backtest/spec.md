@@ -14,6 +14,15 @@
 > [Method Definition](#method-definition-normative). The formulas are requirements, not
 > implementation choices. The spec still names no language, framework, endpoint or library.
 
+## Clarifications
+
+### Session 2026-11-18
+
+- Q: Should the volatility filter be applied to the account's total daily dollar P&L, or to each security's price series separately before combining them? → A: Portfolio level. Filter the account's dollar P&L series at today's share counts (M2–M3). Per-security filtering is out of scope.
+- Q: Besides looking up an account in TraderX, should the risk calculation also accept a position list supplied directly by the caller and return the same structured result? → A: Yes. A documented, read-only entry point takes a position list and returns the same result shape and outcomes as the account lookup, with provenance marking the positions as caller-supplied. It is not shown on the page (FR-020).
+- Q: Should the synthetic price-history file be generated once and committed before the validator model starts writing tests, so that it counts as a fixed input like the spec? → A: Yes. A generator script and its output file, with a SHA-256 checksum, are committed under the feature folder before validation starts. Both implementations and all tests read that file, and any later change is a recorded amendment (FR-014).
+- Q: Which date should the current VaR be labelled with: the as-of date of the data it uses, or the day it is a forecast for? → A: Both, as separate labelled fields: "data as of 2026-11-13 close" and "forecast for 2026-11-16" (FR-002).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - See an account's current one-day 99% VaR (Priority: P1)
@@ -34,7 +43,8 @@ reproduces the dollar VaR within the agreement tolerance (SC-004).
 
 1. **Given** account 22214 with seeded positions, **When** the risk manager requests its risk
    figure, **Then** they see a positive dollar VaR and the three positions with their signed
-   quantities. Each position shows its price on the as-of date and its market value.
+   quantities. Each position shows its price on the as-of date and its market value. The figure
+   is labelled "data as of 2026-11-13 close" and "forecast for 2026-11-16".
 2. **Given** an account ID that does not exist in TraderX, **When** its risk figure is requested,
    **Then** the result is an explicit "account not found" outcome with no VaR number, not zero and
    not blank.
@@ -106,8 +116,8 @@ and zone match the reference table in [Verification Expectations](#verification-
 
 Every VaR figure, track record and verdict carries a provenance label. The label says that the
 price history is synthetic, and gives the seed, the model settings (method name, λ, pool size,
-warm-up length, confidence level, horizon, quantile rule), the as-of date and the time the positions
-were read.
+warm-up length, confidence level, horizon, quantile rule), the as-of date and the position source
+(the TraderX read time, or "caller-supplied").
 
 **Why this priority**: The constitution (Project Constraints, Principle IV) requires honest
 labelling. An auditor reading any single output must be able to tell that it is not real market
@@ -160,7 +170,9 @@ outcome) and confirm that every one carries the full provenance label with the w
   computed exactly as defined in [Method Definition](#method-definition-normative).
 - **FR-002**: Every VaR result MUST show the positions it covers (security, signed quantity), the
   price used for each (the synthetic close on the as-of date), each position's market value, and
-  the account's net market value.
+  the account's net market value. It MUST carry two separately labelled dates: "data as of" the
+  as-of date close (2026-11-13), and "forecast for" the next synthetic business day after it
+  (2026-11-16), the day N+1 in M5. Each backtest row is dated by the day it forecasts (day t).
 - **FR-003**: Positions MUST be the account's current positions as recorded by TraderX, read without
   changing them. Prices MUST come from the synthetic history (Method Definition M1), not from the
   live price stream.
@@ -202,13 +214,17 @@ outcome) and confirm that every one carries the full provenance label with the w
 - **FR-013 (determinism)**: Given the same positions and the same synthetic history, every output
   number MUST be identical across runs and restarts.
 - **FR-014 (synthetic data)**: The synthetic price history MUST be generated from the fixed seed
-  20261117 by the documented process in M1. It MUST be published as a data file, and that file is
-  the authoritative input for both implementations and all tests. It MUST be labelled synthetic
-  wherever it is shown or served.
+  20261117 by the documented process in M1. The generator script, its output data file and the
+  file's SHA-256 checksum MUST be committed under this feature folder before the validator model
+  starts. The file is a fixed input owned by neither the implementing nor the validating side, and
+  it is the authoritative input for both implementations and all tests. The service MUST read this
+  file and MUST NOT regenerate or modify it. Any later change to the file is an amendment recorded
+  in the spec with its new checksum. The data MUST be labelled synthetic wherever it is shown or
+  served.
 - **FR-015 (provenance)**: Every result, errors included, MUST carry the provenance label: synthetic
   price history, seed, method name, λ, pool size, warm-up length, confidence level, horizon,
-  quantile rule, as-of date, and the time positions were read (that time only where positions were
-  read).
+  quantile rule, as-of date, and the position source: either "TraderX account" with the time the
+  positions were read, or "caller-supplied" (FR-020).
 - **FR-016 (honest verdict context)**: The verdict MUST include the fixed note from User Story 3,
   scenario 3.
 
@@ -221,6 +237,12 @@ outcome) and confirm that every one carries the full provenance label with the w
   edits allowed are deployment wiring, each listed in the plan (constitution, Principle II).
 - **FR-019**: Results MUST be readable by machine in a documented structured form, so the
   independent implementation and the tests can compare numbers without scraping the page.
+- **FR-020 (caller-supplied positions)**: The structured interface MUST also accept a position list
+  (security, signed quantity) supplied directly by the caller, with no account lookup. It MUST
+  return the same current VaR, track record and verdict, and the same outcomes FR-009, FR-010 and
+  zero volatility, as an account with those positions would. Provenance MUST mark the positions as
+  "caller-supplied". This entry point is read-only, changes nothing in TraderX, and is not shown on
+  the page.
 
 ### Method Definition *(normative)*
 
@@ -235,13 +257,19 @@ can use a small pool and warm-up.
     ending on the as-of date 2026-11-13 (s = 600).
   - **Tickers:** the 20 tickers in the TraderX price snapshot.
   - **Returns:** daily log returns from a one-factor Gaussian model. The market factor follows
-    GARCH(1,1) with α = 0.08, β = 0.90 and long-run daily volatility 1.0%. Every ticker's factor
-    loading is 1.0. Idiosyncratic shocks are i.i.d. normal with daily volatility 1.5%. All draws
-    come from seed 20261117.
+    GARCH(1,1) with α = 0.08, β = 0.90 and long-run daily volatility 1.0%, so ω = (1 − α − β) ·
+    0.01² = 2 × 10⁻⁶. The process starts at the long-run variance (σ₀² = 10⁻⁴) with no burn-in.
+    Every ticker's factor loading is 1.0. Idiosyncratic shocks are i.i.d. normal with daily
+    volatility 1.5%. All draws come from seed 20261117.
   - **Scaling:** each ticker's path is scaled so that its close on the as-of date equals that
     ticker's `closePrice` in the TraderX price snapshot.
   - **Publication:** the generated closes are published as data (FR-014). The data, not the
     generator, is authoritative.
+  - **File format:** CSV with columns `date,ticker,close`, one row per ticker per day, sorted by
+    date then ticker, closes written with 6 decimal places. The values as written in the file are
+    the inputs; no implementation uses higher-precision values from the generator.
+  - **Anchor check:** the generator MUST stop with an error unless every as-of close in the file
+    equals that ticker's snapshot `closePrice`.
 - **M2 — Portfolio P&L.** For s = 1 … N: xₛ = Σᵢ qᵢ · (Pᵢ,ₛ − Pᵢ,ₛ₋₁). Dollar P&L uses today's
   constant positions. There is no percentage return on net value, which would not be defined for
   long/short accounts.
@@ -269,8 +297,8 @@ can use a small pool and warm-up.
 ### Key Entities
 
 - **Account**: an existing TraderX account (ID, display name). Read only.
-- **Position**: an existing TraderX position (account, security, signed quantity). Read only, and
-  held constant over the backtest.
+- **Position**: a security and signed quantity, either read from an existing TraderX account (read
+  only) or supplied by the caller (FR-020). Held constant over the backtest.
 - **Synthetic price history**: 601 daily closes for each of 20 tickers on a synthetic business-day
   calendar ending 2026-11-13. It is generated from seed 20261117 and labelled synthetic.
 - **Model settings**: the method name, λ, n, W, p, horizon and quantile rule. These are fixed for
@@ -357,8 +385,10 @@ VaR number:
 - account 99999 (does not exist);
 - account 44044 (no positions);
 - a position list that includes a security outside the 20 priced tickers (missing history). No
-  seeded account holds one, so this case is checked by giving the position list directly to the
-  calculation, not by booking a trade in TraderX.
+  seeded account holds one, so this case is checked through the caller-supplied entry point
+  (FR-020), not by booking a trade in TraderX.
+- a caller-supplied position list identical to account 22214's seeded positions returns the same
+  VaR, track record and verdict as account 22214, with provenance "caller-supplied".
 
 **Not pre-registered on purpose:** the Basel zone and breach count for the seeded demo accounts.
 At a 1.39% true rate, a correct model reaches amber or worse roughly a quarter of the time (27%
@@ -395,12 +425,16 @@ coverage in M7, not from a flaw in the model, and the result view says so next t
   security separately. Both are filtered historical simulation. The portfolio-level form is
   hand-checkable, works for long/short accounts, and keeps the finite-sample coverage argument
   (M7) a close approximation, because a breach is then the same event as a residual falling
-  below the pool quantile. Per-security filtering would give different numbers and is out of scope. *(Default
-  chosen; the author may override.)*
+  below the pool quantile. Per-security filtering would give different numbers and is out of scope. *(Confirmed
+  by the author, Clarifications 2026-11-18.)*
 - **Synthetic generator and seed**: Seed 20261117, the one-factor GARCH(1,1)/Gaussian model in M1,
   and the as-of date 2026-11-13 are defaults chosen for this spec. The published data file, not the
-  generator code, is authoritative, because random-number streams differ across languages.
-  *(Default chosen; the author may override.)*
+  generator code, is authoritative, because random-number streams differ across languages. The
+  file is generated and committed at the spec stage, before validation (FR-014). The generator is
+  written by Claude (the implementing model), reviewed and run by the author, and committed before
+  the validator model starts. It follows M1 exactly, so it gives the implementing side no choice
+  over the test input. *(Seed, model and as-of date are defaults; the author may override them
+  before the file is committed.)*
 - **"Current price"**: This is the synthetic close on the as-of date, which by construction equals
   the TraderX price snapshot close. It is not the live ticking price. This keeps results
   deterministic (constitution Principle III) and keeps intraday recalculation out of scope.
