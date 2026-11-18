@@ -27,6 +27,7 @@
 - Amendment (H3, /speckit-analyze): V5 tolerance. LR and p-value agree with the table to within ±0.00005; the decision, direction and Basel zone match exactly (V5).
 - Amendment (M2, /speckit-analyze): POSITIONS_UNAVAILABLE covers a failure of either TraderX lookup (account or position), and of the account list (edge cases, FR-011).
 - Amendment (M3, /speckit-analyze): SC-008 compares the `current`, `track_record` and `verdict` blocks only; `provenance.positions_read_at` is excluded (SC-008).
+- Amendment (round 2 review): account 52355's seeded position is BAC −2400 (`traderx/database/initialSchema.sql`; confirmed in `validation/runs/baseline-before.json`). It was missing from this spec, so the round 2 validator had no source for it (V3).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -376,7 +377,8 @@ n = 5, p = 0.01. Closes C₀ … C₈ = 100, 101, 99, 100, 97, 98, 99, 96, 93.
   `specs/001-portfolio-var-backtest/validation/prestudy_coverage.py`.
 
 **V3 — Independent second implementation.** It is written by a different AI model from this spec
-only. On the published synthetic history and the seeded accounts 22214 and 52355:
+only. On the published synthetic history and the seeded accounts 22214 (C −2000, IBM −100,
+MS +1000) and 52355 (BAC −2400):
 
 - every current VaR and every backtest forecast agrees within **$0.01**;
 - breach flags are identical;
