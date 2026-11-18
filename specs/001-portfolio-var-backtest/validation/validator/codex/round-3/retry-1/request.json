@@ -1,0 +1,63 @@
+{
+  "round": 3,
+  "retry": 1,
+  "folder": "tests/integration/",
+  "provider": "codex",
+  "model": "gpt-5.6-terra",
+  "reasoning_effort": "high",
+  "codex_version": "codex-cli 0.151.0",
+  "inputs": [
+    {
+      "path": ".specify/memory/constitution.md",
+      "sha256": "73c8839ca549ab4e2bcab93aebd6dd16bf89bdc2a62f1b1bfb987a3fef6f64b4"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/spec.md",
+      "sha256": "79eb37736051ca30ed0f1ba93b976f95ab6dbb5b2c55ecfcf44d535a9f67b133"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/contracts/calculation-api.md",
+      "sha256": "69d2f0cdc43ee2382d3145e7654fb225229c4cb3164e3a1f482eadfa26fa089e"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/contracts/http-api.md",
+      "sha256": "31cf009d247180625a51955e913f2d8bfc7b8af035c1e0e3960d397396680505"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/contracts/data-model.md",
+      "sha256": "f3b4024d211369d7d9d88a9ebc3a87b054600003ad77f2b271e002d22c637221"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/contracts/test-harness.md",
+      "sha256": "e8123170331200272372bf8253846ba9f29cb099f14816fa983fef001357e040"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/data/synthetic_prices_seed20261117.meta.json",
+      "sha256": "0d57c8ab0c54e89cad486c6c69fd545257ceb8f79695edcff3343a92ea4afda2"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/data/SHA256SUMS",
+      "sha256": "2e37a12d981e21fbafadb05ad03292e1b461fa879aca17c5530c932a58943832"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/data/synthetic_prices_seed20261117.csv",
+      "sha256": "9ea2eab18bc0bf108fffb90245fd7f51a07e0fa16e52d49564e20c50e0718ce3",
+      "sent": "header + first 3 + last 3 rows"
+    },
+    {
+      "path": "tests/oracle/oracle_independent_var.py",
+      "sha256": "625aa40d6e62e214eedfccfe1dbae42bd41df84a91d42fcda75e226c6acbfbe2",
+      "sent": "round 3 only (oracle, input 9)"
+    },
+    {
+      "path": "tests/oracle/test_oracle_independent_comparison.py",
+      "sha256": "cef805ecd802bc43ee156c4e89f5edbde36359a651c12e9cf3f7c7acb41d9274",
+      "sent": "round 3 only (oracle, input 9)"
+    }
+  ],
+  "prompt_files": {
+    "common.md": "46330decb107454aa442161016954fd33c7d9026842cee275a7e9a844b113c59",
+    "round-3-integration.md": "abb3c1c36e48762b5263243ca4ab4661a7e1217e031375183a2d7a6ea490af21"
+  },
+  "started_at": "2026-11-18T22:49:05Z"
+}
