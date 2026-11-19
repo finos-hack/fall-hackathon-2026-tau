@@ -123,7 +123,7 @@ The validator listed these under "Open questions"; they are true gaps in the har
 - **Why the limit is acceptable**: the integrity of `tests/` does not rest on the deny rule alone.
   `tests.sha256` (0ddb328) is checked again at the gate (T037), and any change under `tests/` would
   show in git history after 58abb74.
-- **Decision (Author)**: <accept as passed with this limit recorded >
+- **Decision (Author)**: accept as passed with this limit recorded 
 
 ## D-011 — Correction to D-007: the accepted tests do cover ZERO_VOLATILITY over HTTP
 

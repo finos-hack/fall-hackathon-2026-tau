@@ -1,0 +1,125 @@
+# T037 submission gate, part A, 2026-11-18T23:40:31Z
+# commit 44f69dd77a118361e134247af04aa91ab9348118  (evidence: compose-stack runs, latency, SC-008 restart, demo screenshot; traceability (T033-T036, T038))
+# working tree: 1 changed or untracked paths
+
+## 1. Baseline untouched (Principle II): expected empty
+
+$ git diff fbdfb38 --stat -- traderx/
+[exit 0]
+
+## 2. Validator tests unchanged since T010
+
+$ sha256sum -c specs/001-portfolio-var-backtest/validation/validator/tests.sha256
+tests/integration/test_integration_risk_http.py: OK
+tests/oracle/oracle_independent_var.py: OK
+tests/oracle/test_oracle_independent_comparison.py: OK
+tests/unit/test_unit_calculation_contract.py: OK
+[exit 0]
+
+## 3. Every commit touching tests/ is a validator import
+# Expected trailer after disputes D-003: 'Assisted-by: gpt-5.6-terra via codex-cli 0.151.0'
+# (tasks.md and quickstart.md still name the qwen trailer; superseded by D-003).
+# 58abb74 has the Assisted-by line in its message body but not in the final trailer block
+# (separate -m paragraphs; disputes D-012), so the body is searched as well as the trailers.
+
+$ git log --format='%h %s%n  trailer: [%(trailers:key=Assisted-by,valueonly,separator=%x2C)]' -- tests/
+58abb74 tests: validator-authored tests for unit, oracle and integration (codex gpt-5.6-terra, rounds 1-3)
+  trailer: []
+[exit 0]
+
+$ for c in $(git log --format=%h -- tests/); do echo "$c: $(git log -1 --format=%B $c | grep -E '^Assisted-by:' || echo 'NO Assisted-by LINE')"; done
+58abb74: Assisted-by: gpt-5.6-terra via codex-cli 0.151.0
+[exit 0]
+
+## 4. Data integrity
+
+$ cd specs/001-portfolio-var-backtest/data && sha256sum -c SHA256SUMS
+synthetic_prices_seed20261117.csv: OK
+synthetic_prices_seed20261117.meta.json: OK
+[exit 0]
+
+$ python3 specs/001-portfolio-var-backtest/data/generate_synthetic_prices.py --check
+regenerated sha256 9ea2eab18bc0bf108fffb90245fd7f51a07e0fa16e52d49564e20c50e0718ce3
+committed   sha256 9ea2eab18bc0bf108fffb90245fd7f51a07e0fa16e52d49564e20c50e0718ce3
+MATCH
+[exit 0]
+
+## 5. Tier 1 (offline)
+
+$ PYTHONPATH=risk-service python3 -m pytest tests/unit tests/oracle -q -p no:cacheprovider
+
+....................                                                     [100%]
+20 passed in 2.65s
+[exit 0]
+
+## 6. Tier 2 (compose stack traderx-tau)
+
+$ curl -s http://127.0.0.1:18110/health
+{"status": "ok", "data_sha256": "9ea2eab18bc0bf108fffb90245fd7f51a07e0fa16e52d49564e20c50e0718ce3", "synthetic": true}
+[exit 0]
+
+$ RISK_BASE_URL=http://127.0.0.1:18110 TRADERX_BASE_URL=http://127.0.0.1:8080 PYTHONPATH=risk-service python3 -m pytest tests/integration -q -rA -p no:cacheprovider
+
+......                                                                   [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/integration/test_integration_risk_http.py::test_outcomes_precedence_and_provenance
+PASSED tests/integration/test_integration_risk_http.py::test_caller_positions_match_account_22214_and_mark_provenance
+PASSED tests/integration/test_integration_risk_http.py::test_http_results_match_the_independent_oracle
+PASSED tests/integration/test_integration_risk_http.py::test_seeded_account_results_arrive_within_five_seconds
+PASSED tests/integration/test_integration_risk_http.py::test_repeated_requests_have_identical_numeric_result_blocks
+PASSED tests/integration/test_integration_risk_http.py::test_traderx_baseline_responses_are_preserved
+6 passed in 0.27s
+[exit 0]
+
+## 7. Quickstart manual rows
+
+$ curl -s -X POST -H 'Content-Type: application/json' -d '{"positions":[{"security":"AAPL","quantity":10},{"security":"ZZZZ","quantity":5}]}' -w '\n[http %{http_code}]' http://127.0.0.1:18110/api/v1/risk/positions | python3 -c 'import sys,json; raw=sys.stdin.read(); body,code=raw.rsplit(chr(10),1); d=json.loads(body); print(code, d["outcome"], d.get("missing_securities"))'
+[http 422] MISSING_PRICE_HISTORY ['ZZZZ']
+[exit 0]
+
+$ for p in / /app.js /api/v1/accounts; do curl -s -o /dev/null -w "$p %{http_code} %{content_type}\n" http://127.0.0.1:18110$p; done
+/ 200 text/html; charset=utf-8
+/app.js 200 application/javascript; charset=utf-8
+/api/v1/accounts 200 application/json; charset=utf-8
+[exit 0]
+
+$ docker ps --filter label=com.docker.compose.project=traderx-tau --format '{{.Names}} {{.Ports}}' | grep -o '[0-9.]*:[0-9]*->' | sort -u | grep -v '^127.0.0.1:' || echo 'every published port is bound to 127.0.0.1'
+every published port is bound to 127.0.0.1
+[exit 0]
+
+# T037 submission gate, part B: clean-checkout start, 2026-11-19T00:05:02Z
+# Clone: git clone https://github.com/finos-hack/fall-hackathon-2026-tau.git ~/work/tau-clean-check; git checkout 44f69dd77a118361e134247af04aa91ab9348118
+# Stack: docker compose -f traderx/pricing-awareness-market-data/docker-compose.yml -f deploy/tau.override.yml --project-name traderx-tau-clean up -d --build (run by the Author, from the clone)
+# risk-service container working_dir: /home/research/work/tau-clean-check/traderx/pricing-awareness-market-data
+# database volume created 2026-11-18T19:04:31-05:00 (fresh, see notes)
+# Notes: (1) a first attempt cloned into /tmp; Docker here is the snap package, which has a private /tmp, so every bind-mounted config file appeared as an empty directory and several containers failed. Clone outside /tmp.
+#        (2) that attempt left a Postgres volume initialised without the schema; the clean-check project was brought down with -v (its own volume only) and started again from scratch.
+
+$ curl -s http://127.0.0.1:18110/health
+{"status": "ok", "data_sha256": "9ea2eab18bc0bf108fffb90245fd7f51a07e0fa16e52d49564e20c50e0718ce3", "synthetic": true}
+
+$ RISK_BASE_URL=http://127.0.0.1:18110 TRADERX_BASE_URL=http://127.0.0.1:8080 PYTHONPATH=risk-service python3 -m pytest tests/integration -q -rA   # run from the clone
+
+......                                                                   [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/integration/test_integration_risk_http.py::test_outcomes_precedence_and_provenance
+PASSED tests/integration/test_integration_risk_http.py::test_caller_positions_match_account_22214_and_mark_provenance
+PASSED tests/integration/test_integration_risk_http.py::test_http_results_match_the_independent_oracle
+PASSED tests/integration/test_integration_risk_http.py::test_seeded_account_results_arrive_within_five_seconds
+PASSED tests/integration/test_integration_risk_http.py::test_repeated_requests_have_identical_numeric_result_blocks
+PASSED tests/integration/test_integration_risk_http.py::test_traderx_baseline_responses_are_preserved
+6 passed in 0.32s
+[exit 0]
+
+$ (in the clone) PYTHONPATH=risk-service python3 -m pytest tests/unit tests/oracle -q
+20 passed in 2.67s
+[exit 0]
+
+# Gate result: PASS. Part A: traderx/ unchanged; tests.sha256 all OK; the only commit touching
+# tests/ (58abb74) carries the Assisted-by line for the codex validator in its body (not parsed as a
+# trailer, disputes D-012); data checksums OK and the generator reproduces the file (MATCH); tier 1
+# 20 passed; tier 2 6 passed; quickstart rows as expected; every published port on 127.0.0.1.
+# Part B: from a fresh clone of the pushed commit, the documented compose command starts the stack,
+# /health shows the data SHA-256, and tier 1 (20) and tier 2 (6) pass against it.
