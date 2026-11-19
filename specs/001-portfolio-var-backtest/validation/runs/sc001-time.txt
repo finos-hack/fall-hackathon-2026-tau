@@ -1,0 +1,4 @@
+# SC-001 time to read a verdict (T035), 2026-11-18T23:40:36Z
+Author's report (Korean, verbatim): "22214의 verdict를 읽을 때까지 순식간에 나온다."
+English: for account 22214 the verdict appears instantly after opening the page and picking the account.
+No stopwatch figure was taken. Server-side time for the same request: about 0.02 s (latency.txt).

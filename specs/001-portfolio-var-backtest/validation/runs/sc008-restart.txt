@@ -1,0 +1,8 @@
+# SC-008 manual check, 2026-11-18T23:35:55Z: numeric blocks (current, track_record, verdict) of GET /api/v1/risk/accounts/{22214,52355}, before and after 'docker compose ... restart risk-service' (container status: Up 5 minutes). Canonical JSON: sort_keys, separators (',',':').
+# risk-service container StartedAt 2026-11-18T23:30:22.39707339Z (UTC); before-restart blocks captured 2026-11-18T23:27:5xZ
+account 22214: before restart sha256 69a51686d70e784fa08cc806454ed046451cc85bc61f94a76e0579d574e1513f
+account 22214: after  restart sha256 69a51686d70e784fa08cc806454ed046451cc85bc61f94a76e0579d574e1513f
+account 22214: BYTE-IDENTICAL
+account 52355: before restart sha256 8b69bacd76f795f53725d6b8eb6349a356646c2d3f3818040e1c23c6ee196302
+account 52355: after  restart sha256 8b69bacd76f795f53725d6b8eb6349a356646c2d3f3818040e1c23c6ee196302
+account 52355: BYTE-IDENTICAL

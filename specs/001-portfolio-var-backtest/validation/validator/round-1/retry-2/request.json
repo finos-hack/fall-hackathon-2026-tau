@@ -1,0 +1,58 @@
+{
+  "round": 1,
+  "retry": 2,
+  "folder": "tests/unit/",
+  "model": "qwen3-coder:30b",
+  "model_digest": "06c1097efce0431c2045fe7b2e5108366e43bee1b4603a7aded8f21689e90bca",
+  "ollama_version": "0.40.3",
+  "options": {
+    "temperature": 0,
+    "seed": 20261117,
+    "num_ctx": 65536,
+    "num_predict": 32768
+  },
+  "inputs": [
+    {
+      "path": ".specify/memory/constitution.md",
+      "sha256": "73c8839ca549ab4e2bcab93aebd6dd16bf89bdc2a62f1b1bfb987a3fef6f64b4"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/spec.md",
+      "sha256": "cd4792475ba84a3b4ac4a3b78e08fa0ef4d57a4e9ec54f88d790d9ca27d2bf30"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/contracts/calculation-api.md",
+      "sha256": "69d2f0cdc43ee2382d3145e7654fb225229c4cb3164e3a1f482eadfa26fa089e"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/contracts/http-api.md",
+      "sha256": "31cf009d247180625a51955e913f2d8bfc7b8af035c1e0e3960d397396680505"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/contracts/data-model.md",
+      "sha256": "8029661c82d857ed2975855cd8dd8a129c1e7cf5664c17d395c90cf765af31ec"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/contracts/test-harness.md",
+      "sha256": "e8123170331200272372bf8253846ba9f29cb099f14816fa983fef001357e040"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/data/synthetic_prices_seed20261117.meta.json",
+      "sha256": "0d57c8ab0c54e89cad486c6c69fd545257ceb8f79695edcff3343a92ea4afda2"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/data/SHA256SUMS",
+      "sha256": "2e37a12d981e21fbafadb05ad03292e1b461fa879aca17c5530c932a58943832"
+    },
+    {
+      "path": "specs/001-portfolio-var-backtest/data/synthetic_prices_seed20261117.csv",
+      "sha256": "9ea2eab18bc0bf108fffb90245fd7f51a07e0fa16e52d49564e20c50e0718ce3",
+      "sent": "header + first 3 + last 3 rows"
+    }
+  ],
+  "prompt_files": {
+    "common.md": "46330decb107454aa442161016954fd33c7d9026842cee275a7e9a844b113c59",
+    "round-1-unit.md": "d16c88d9691a7f53bcd11b3beed6acf42649bfdf6687eef7bbfead2ee319945f"
+  },
+  "started_at": "2026-11-18T19:06:13Z"
+}

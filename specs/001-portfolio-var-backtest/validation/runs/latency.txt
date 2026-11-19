@@ -1,0 +1,10 @@
+# T034 SC-002 latency, curl time_total in seconds, 3 runs each, compose stack, 2026-11-18T23:27:50Z. Target: under 5 s each.
+GET /api/v1/risk/accounts/22214 run 1: 200 0.019540
+GET /api/v1/risk/accounts/22214 run 2: 200 0.020437
+GET /api/v1/risk/accounts/22214 run 3: 200 0.018156
+GET /api/v1/risk/accounts/52355 run 1: 200 0.019663
+GET /api/v1/risk/accounts/52355 run 2: 200 0.018698
+GET /api/v1/risk/accounts/52355 run 3: 200 0.019486
+GET /api/v1/risk/accounts/44044 run 1: 200 0.006995
+GET /api/v1/risk/accounts/44044 run 2: 200 0.006771
+GET /api/v1/risk/accounts/44044 run 3: 200 0.006101

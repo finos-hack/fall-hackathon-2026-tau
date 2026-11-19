@@ -1,0 +1,15 @@
+# T033 tier 2 against the compose stack (project traderx-tau, deploy/tau.override.yml), 2026-11-18T23:27:49Z, HEAD bc3e946
+# risk-service image: sha256:fbef0db43a30
+$ RISK_BASE_URL=http://127.0.0.1:18110 TRADERX_BASE_URL=http://127.0.0.1:8080 PYTHONPATH=risk-service python3 -m pytest tests/integration -q -rA
+
+......                                                                   [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/integration/test_integration_risk_http.py::test_outcomes_precedence_and_provenance
+PASSED tests/integration/test_integration_risk_http.py::test_caller_positions_match_account_22214_and_mark_provenance
+PASSED tests/integration/test_integration_risk_http.py::test_http_results_match_the_independent_oracle
+PASSED tests/integration/test_integration_risk_http.py::test_seeded_account_results_arrive_within_five_seconds
+PASSED tests/integration/test_integration_risk_http.py::test_repeated_requests_have_identical_numeric_result_blocks
+PASSED tests/integration/test_integration_risk_http.py::test_traderx_baseline_responses_are_preserved
+6 passed in 0.30s
+exit 0

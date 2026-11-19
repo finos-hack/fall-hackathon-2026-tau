@@ -1,0 +1,1 @@
+codex exec --ephemeral --ignore-user-config --ignore-rules --skip-git-repo-check -s read-only -C /tmp/validator-codex-r0zdbi4i -m gpt-5.6-terra -c model_reasoning_effort="high" --json -o /home/research/work/fall-hackathon-2026-tau/specs/001-portfolio-var-backtest/validation/validator/codex/round-3/response.md -

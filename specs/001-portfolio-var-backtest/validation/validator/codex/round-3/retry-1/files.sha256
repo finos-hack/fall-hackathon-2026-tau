@@ -1,0 +1,2 @@
+d7f429ab1a352bf0921f45bec42dbe0426f7f0a71bfedfb51b58c960480faa18  tests/integration/conftest.py
+a4866752934215586141482cd7250d05ce693f2c2b9b9581b6b3942b5724edf2  tests/integration/test_integration_http_contract.py

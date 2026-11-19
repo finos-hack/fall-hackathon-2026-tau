@@ -1,0 +1,14 @@
+# Tier 2 against a HOST-RUN risk-service (127.0.0.1:18110, python3 -m risk_service.server) and the traderx-state-008 stack; NOT the T033 compose run, 2026-11-18T23:16:25Z, HEAD 9eb38d0 + uncommitted risk-service/ (core.py sha256 371405429f72)
+$ RISK_BASE_URL=http://127.0.0.1:18110 TRADERX_BASE_URL=http://127.0.0.1:8080 PYTHONPATH=risk-service python3 -m pytest tests/integration -q -rA
+
+......                                                                   [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/integration/test_integration_risk_http.py::test_outcomes_precedence_and_provenance
+PASSED tests/integration/test_integration_risk_http.py::test_caller_positions_match_account_22214_and_mark_provenance
+PASSED tests/integration/test_integration_risk_http.py::test_http_results_match_the_independent_oracle
+PASSED tests/integration/test_integration_risk_http.py::test_seeded_account_results_arrive_within_five_seconds
+PASSED tests/integration/test_integration_risk_http.py::test_repeated_requests_have_identical_numeric_result_blocks
+PASSED tests/integration/test_integration_risk_http.py::test_traderx_baseline_responses_are_preserved
+6 passed in 0.25s
+exit 0

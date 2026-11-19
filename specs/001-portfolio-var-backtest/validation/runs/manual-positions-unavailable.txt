@@ -1,0 +1,9 @@
+# POSITIONS_UNAVAILABLE observed live, 2026-11-18T23:25:02Z: traderx-tau account-service answering HTTP 500 (JDBC) right after start
+HTTP/1.0 503 Service Unavailable
+Server: risk-service/001 Python/3.10.18
+Date: Wed, 18 Nov 2026 23:25:03 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 782
+Cache-Control: no-store
+
+{"outcome": "POSITIONS_UNAVAILABLE", "message": "TraderX could not be reached: GET http://account-service:18088/account/22214 returned HTTP 500", "provenance": {"data": "SYNTHETIC price history - not real market data", "synthetic": true, "seed": 20261117, "data_file": "specs/001-portfolio-var-backtest/data/synthetic_prices_seed20261117.csv", "data_sha256": "9ea2eab18bc0bf108fffb90245fd7f51a07e0fa16e52d49564e20c50e0718ce3", "method": "filtered historical simulation, EWMA λ=0.94", "lambda": 0.94, "pool_size": 250, "warmup": 100, "confidence": 0.99, "horizon_days": 1, "quantile_rule": "linear interpolation, position (n−1)p", "as_of_date": "2026-11-13", "position_source": "TraderX account", "positions_read_at": null}, "current": null, "track_record": null, "verdict": null}
