@@ -9,6 +9,8 @@ code, one AI model implements, and a different AI model writes the tests and an 
 second implementation from the spec alone. Every disagreement is recorded, not hidden.
 Prices are synthetic and labelled as such.
 
+**Presentation:** [slides (PDF)](Presentations/slides.pdf) for the Nov 20 judging.
+
 ## Quick start
 
 Requirements: Docker with Compose v2.24+ and, for the tests, Python 3.9+ with pytest. Clone outside
